@@ -96,7 +96,7 @@ The rules are different, and they do ship switched on. A rule is not a procedure
 
 ## What ships switched on
 
-Twenty-five rules, in `rules/`, indexed one line each in `MEMORY.md`. Every one of them was earned by getting something wrong first. The ones that matter most on day one:
+Twenty-six rules, in `rules/`, indexed one line each in `MEMORY.md`. Every one of them was earned by getting something wrong first. The ones that matter most on day one:
 
 - **Every figure is computed by a script**, and the script is kept next to its output. No mental arithmetic, ever ([R01](rules/R01_calculations_in_python.md)).
 - **Spreadsheet numbers are live formulas** against a raw data sheet, never pasted values ([R03](rules/R03_excel_formulas.md)).
@@ -106,6 +106,7 @@ Twenty-five rules, in `rules/`, indexed one line each in `MEMORY.md`. Every one 
 - **Forums before press releases.** The official answer to "does this matter" is always yes, because somebody sells it ([R06](rules/R06_search_before_acting.md)).
 - **Once you edit a document by hand, it stops regenerating** and starts patching ([R14](rules/R14_patch_dont_regenerate.md)).
 - **Every decision gets explained in plain words.** The jargon goes after, in brackets ([R35](rules/R35_plain_language.md)).
+- **You get told when to clear the session**, once everything worth keeping is written to a file ([R36](rules/R36_clear_the_session.md)).
 
 **To turn one off, say so.** The card moves to the archive with the date and the reason. Nothing is deleted, because in four months you will want to know why you changed your mind.
 

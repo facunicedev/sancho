@@ -94,7 +94,7 @@ Las reglas son otra cosa, y esas sí vienen encendidas. Una regla no es un proce
 
 ## Qué viene encendido
 
-Veinticinco reglas, en `rules/`, indexadas a una línea cada una en `MEMORY.md`. Todas se ganaron equivocándose antes. Las que más pesan el primer día:
+Veintiséis reglas, en `rules/`, indexadas a una línea cada una en `MEMORY.md`. Todas se ganaron equivocándose antes. Las que más pesan el primer día:
 
 - **Toda cifra la calcula un guion**, y el guion se guarda junto a su salida. Nada de cuentas de cabeza ([R01](rules/R01_calculations_in_python.md)).
 - **Los números de una hoja de cálculo son fórmulas vivas** contra una hoja de datos crudos, nunca valores pegados ([R03](rules/R03_excel_formulas.md)).
@@ -104,6 +104,7 @@ Veinticinco reglas, en `rules/`, indexadas a una línea cada una en `MEMORY.md`.
 - **Foros antes que notas de prensa.** La respuesta oficial a «¿esto importa?» siempre es que sí, porque alguien lo vende ([R06](rules/R06_search_before_acting.md)).
 - **En cuanto editas un documento a mano, deja de regenerarse** y pasa a parchearse ([R14](rules/R14_patch_dont_regenerate.md)).
 - **Toda decisión se explica en términos normales.** El tecnicismo va detrás, entre paréntesis ([R35](rules/R35_plain_language.md)).
+- **Se te avisa de cuándo limpiar la sesión**, en cuanto lo que vale la pena guardar está escrito en un archivo ([R36](rules/R36_clear_the_session.md)).
 
 **Para apagar una, dilo.** La ficha se va al archivo con su fecha y su motivo. No se borra nada, porque dentro de cuatro meses vas a querer saber por qué cambiaste de idea.
 

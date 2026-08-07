@@ -6,7 +6,7 @@
 >
 > Not to be confused with `Knowledge/PROFILE.md`, which answers **who they are**; `Documents/TASKS.md`, which answers **what was done**; or `HANDOFF.md`, which answers **where the session stopped**.
 >
-> These twenty-five are the **defaults**. They ship switched on because they are what office work needs, and every one of them was earned by getting something wrong first. Any of them can be turned off: say so, and the card moves to the archive with the date and the reason. The numbering has gaps on purpose, so a rule keeps its number when it travels between repositories.
+> These twenty-six are the **defaults**. They ship switched on because they are what office work needs, and every one of them was earned by getting something wrong first. Any of them can be turned off: say so, and the card moves to the archive with the date and the reason. The numbering has gaps on purpose, so a rule keeps its number when it travels between repositories.
 
 ## Always, on any task
 
@@ -53,6 +53,7 @@
 | [R26](rules/R26_archive_dont_delete.md) | Superseded material is archived with its date and reason, not deleted. |
 | [R27](rules/R27_harvest_proposes.md) | What is learned is proposed in `Proposals/`, never written into memory. |
 | [R28](rules/R28_nothing_unfiled.md) | No file without a row in its index, in both directions. |
+| [R36](rules/R36_clear_the_session.md) | Suggest a fresh session actively, once the state is written down. |
 
 ## How this index grows
 

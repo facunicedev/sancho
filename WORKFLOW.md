@@ -122,7 +122,7 @@ Whoever did the work does not mark their own exam: the review is against the fil
 
 ## Step 11. Closing
 
-Finishing the checklist does **not** close the task. The person closes it, approving in words ([R05](rules/R05_approval_to_close.md)).
+Finishing the checklist does **not** close the task. The person closes it, approving in words ([R05](rules/R05_approval_to_close.md)). Once they have, a fresh session is suggested. It is also suggested unprompted whenever the session stops helping and there is nothing left in it worth keeping: on a change of subject, after research already filed, and before a long job ([R36](rules/R36_clear_the_session.md)).
 
 Some tasks are left open on purpose because they depend on something the person has to do. Those are marked as such and do not block the others.
 
