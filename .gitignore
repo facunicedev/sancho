@@ -1,0 +1,25 @@
+# Office lock files
+~$*
+
+# Python
+__pycache__/
+*.pyc
+
+# Local machine settings, not the repository's
+.claude/settings.local.json
+
+# Your work is yours. These folders are created on first run and stay on your
+# disk: this repository ships the method, never anybody's documents.
+Inbox/
+Volcado/
+Documents/
+Documentos/
+Calculations/
+Calculos/
+Deliverables/
+Entregables/
+Knowledge/
+Conocimiento/
+Proposals/
+Propuestas/
+sancho.md
