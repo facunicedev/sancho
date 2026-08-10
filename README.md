@@ -1,10 +1,13 @@
-# Sancho
+# <div align="center"> **Sancho**
+
+<div align="center"> <img width="1597" height="985" alt="image" src="https://github.com/user-attachments/assets/11f6eab3-030a-405a-9106-d6bd25d01dbb" />
+
 
 **A harness for Claude Code, for people whose job is not code.**
 
 Spreadsheets. Reports for a boss who reads the first paragraph. Emails to companies that owe you an answer. That job.
 
-[Español](README.es.md) · MIT licensed · v0.1
+[Español](README.es.md) · MIT licensed · v0.1 </div>
 
 ---
 
