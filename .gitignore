@@ -23,3 +23,6 @@ Conocimiento/
 Proposals/
 Propuestas/
 sancho.md
+
+# Session state written by the hooks, never the repository's
+.claude/state/

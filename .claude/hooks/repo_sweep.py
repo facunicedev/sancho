@@ -23,6 +23,9 @@ import os
 import re
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import common
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # folder -> its index
@@ -154,9 +157,15 @@ def check_rubbish(warnings):
 
 def main():
     try:
-        json.load(sys.stdin)
+        event = json.load(sys.stdin)
     except Exception:
-        pass
+        event = {}
+
+    # A Stop hook that returns additionalContext calls the model again, which stops
+    # again, and the hook fires once more: a loop. The harness flags that it already
+    # comes from a stop with `stop_hook_active`, and then this goes quiet.
+    if event.get("stop_hook_active"):
+        return
 
     warnings = []
     try:
@@ -168,6 +177,8 @@ def main():
 
     if not warnings:
         return
+
+    common.record(warnings, "repo_sweep")
 
     header = "Repository sweep, {} warnings:".format(len(warnings))
     body = "\n".join("- " + w for w in warnings[:20])

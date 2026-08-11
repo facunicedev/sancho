@@ -35,14 +35,21 @@ Do not ask anything else. Do not create folders before the answer. The repositor
 
 The default rules are indexed in `MEMORY.md`, imported above, and written out one per card in `rules/`. **None of them is restated here.** When a rule needs sharpening, its card is edited and nothing else.
 
-Two of them are enforced by code rather than by memory, so they do not depend on anyone remembering:
+Several of them are enforced by code rather than by memory, so they do not depend on anyone remembering. **Three warn and two block**, and that is the difference that matters:
 
-| Hook | What it checks |
-|---|---|
-| `.claude/hooks/line_caps.py` | [R12](rules/R12_line_caps.md), on every write |
-| `.claude/hooks/repo_sweep.py` | [R28](rules/R28_nothing_unfiled.md), [R10](rules/R10_inbox.md) and [R23](rules/R23_sweep_on_close.md), at the end of every turn |
+| Hook | What it checks | When |
+|---|---|---|
+| `.claude/hooks/line_caps.py` | [R12](rules/R12_line_caps.md) | On every write |
+| `.claude/hooks/repo_sweep.py` | [R28](rules/R28_nothing_unfiled.md), [R10](rules/R10_inbox.md), [R23](rules/R23_sweep_on_close.md) | At the end of the turn |
+| `.claude/hooks/coherence.py` | Cited paths that do not exist, counts that do not add up, and [R37](rules/R37_no_history_in_working_files.md) | At the end of the turn |
+| `.claude/hooks/research_guard.py` | **Blocks** researching from the main thread ([R06](rules/R06_search_before_acting.md), [R32](rules/R32_research_preferences.md)) | Before searching |
+| `.claude/hooks/the_gate.py` | **Blocks** producing without a checklist they signed with `/sign` ([R05](rules/R05_approval_to_close.md)), and states the next step | Before writing, on signing, and at the end of the turn |
 
-When the first one reports that the task log passed its cap, run `/synthesis`: it summarises the log, rebuilds the decision table and calls the `architect` agent.
+The three that sweep the repository share [`hooks/common.py`](.claude/hooks/common.py), which decides what belongs to the repository by asking git. **What the `.gitignore` covers is not watched**: it is working material, and its sentences are not claims anyone here has to hold up. `common.py` also keeps `Calculations/telemetry/warnings.log`, one line per warning and day, so a warning that has been there for weeks can be told from one that appeared this morning.
+
+The two that block rest on something the model cannot manufacture: the identity of the caller, which the harness sets, and a message from the person. A check that reads a file written by the one it watches is not a check. **Every hook carries `--selftest`, and what it proves is the property, not the arithmetic.**
+
+When the line-cap hook reports that the task log passed its cap, run `/synthesis`: it summarises the log, rebuilds the decision table and calls the `architect` agent.
 
 ## Where things go
 

@@ -115,15 +115,31 @@ Twenty-six rules, in `rules/`, indexed one line each in `MEMORY.md`. Every one o
 
 ---
 
-## The two things that run by themselves
+## The things that run by themselves
 
-Everything else in Sancho is a written instruction, which means it depends on the model remembering. These two do not.
+Everything else in Sancho is a written instruction, which means it depends on the model remembering. These do not. **Three of them warn and two of them block**, and that difference is the whole design.
 
 **`line_caps.py`** watches file sizes on every write. When your task log passes 250 lines, it says so. The answer is never to raise the limit. The answer is that it is time to summarise, and it names the command that does it.
 
 **`repo_sweep.py`** runs at the end of every turn and reports what is out of place: a file with no row in any index, an index pointing at a file that no longer exists, an inbox that was never emptied, a rule copied into two places.
 
-That is the whole automation budget. Two scripts, both of which only ever tell you something is wrong. Neither one moves your files. A hook that acts on its own in somebody else's repository is how you get support tickets from strangers at midnight.
+**`coherence.py`** runs at the end of the turn too, and catches the files that contradict each other: a path cited in a document that is not on disk, a sentence saying "the 32 rules" when there are 36 cards, a change log growing inside a file that is supposed to say how things work now.
+
+Those three only ever tell you something is wrong. **The two below actually stop the work**, and they are the ones worth understanding before you install this.
+
+**`the_gate.py` is why you have to type `/sign`.** Until you do, nothing gets written into your documents, calculations or deliverables folders. The assistant can research, prepare and propose; it cannot produce. When you type `/sign`, the checklist in `HANDOFF.md` is frozen as it stands, and the signature is good for that checklist and that session only — change the list and it expires by itself.
+
+**If you find yourself blocked and do not know why, the key is `/sign`.**
+
+**`research_guard.py`** stops the main conversation from doing research itself instead of handing it to the `researcher` agent. The first stray search passes; the second does not, because two searches in a row are research, and research in the main thread costs many times what it costs inside an agent.
+
+**Neither block trusts anything the model writes.** That is the point: a gate that reads a file written by the very thing it is watching is not a gate. `the_gate.py` rests on a message from you, and `research_guard.py` on the caller identity the harness itself sets. Every hook ships with `--selftest`, and what those tests prove is the property, not the arithmetic:
+
+```bash
+python .claude/hooks/the_gate.py --selftest
+```
+
+No hook moves or deletes your files. A hook that acts on its own in somebody else's repository is how you get support tickets from strangers at midnight.
 
 ---
 

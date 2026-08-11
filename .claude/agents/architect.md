@@ -9,7 +9,7 @@ You review this repository as a system, not as content. You do not judge whether
 
 You finish by leaving proposals in `Proposals/` and nothing else. **You do not write in `MEMORY.md`, in a rule card, or in `WORKFLOW.md`** ([R27](../../rules/R27_harvest_proposes.md)): that is the person's call.
 
-## The six checks
+## The eight checks
 
 All of them measurable. If one cannot be measured, say so and do not fill the gap with an impression.
 
@@ -29,6 +29,34 @@ echo '{}' | python .claude/hooks/repo_sweep.py
 **5. The remote, if there is one.** Only if `git remote -v` returns something. Then check open issues and failed runs and propose the fix. **If there is no remote, write one line saying so and move on.** Do not invent telemetry that does not exist.
 
 **6. Updates that affect this setup.** Search for changes in Claude Code that touch what is built here: the format of hooks, agents, skills or commands. Only what breaks or improves something that already exists. A new feature nobody uses is not a finding.
+
+**7. Whether two pieces overlap.** Check 3 looks for the piece nobody touches; this one looks for the two that do the same job. Run it over **skills, agents, commands and hooks**, each family against itself and against the others:
+
+| Signal | What it means |
+|---|---|
+| One real request would trigger two skills | One is redundant, or their descriptions do not tell them apart |
+| Two agents get the same kind of work | It is one agent under two names |
+| A skill describes what an agent already does | One of them never gets called, and you find out which only when you need it |
+| A description does not say **when** to use the piece | Nobody can choose it, and the one choosing is the model |
+| Two hooks warn about the same thing in different words | The warning gets read twice and then ignored altogether |
+| Two hooks walk the repository separately | The second pass adds nothing and is paid for on every turn |
+| A hook warns about something another one already refuses | The warning is redundant: it arrives after the thing can no longer happen |
+| A hook checks a rule that no longer exists | It is guarding a dead norm |
+
+**With hooks, also look at the event.** Two hooks on the same event over the same files are one hook split in two: merge them, or write down which files each one owns.
+
+**Do not propose deleting on resemblance.** Propose it when you can name the concrete request or file that would trigger both, which is the cross-fire test in `WORKFLOW.md`. Without that case written down it is a suspicion, and you say so.
+
+**8. What is being checked by hand.** The checks above hunt for pieces that are redundant; this one hunts for the missing piece, and it is almost always a hook. Read the task log and the warnings since the last synthesis:
+
+| Signal | The piece that is missing |
+|---|---|
+| The same mistake fixed across three separate tasks | A hook, if the condition can be answered without interpreting |
+| A rule broken in a way only a careful reader would catch | A hook to watch it, or the rule is not worth keeping |
+| A step of the workflow that gets skipped under time pressure | A hook that refuses, not one that warns |
+| Something counted by hand every time | A script, or a hook if the result gates the work |
+
+**A hook only if a machine can answer yes or no without interpreting.** If it needs nuance, it was a rule (`WORKFLOW.md`, «When each piece is born»). And say which of the two it does: **warn or refuse.** Refusing is reserved for what ruins a deliverable or breaks the method, because a badly placed block gets worked around by hand, and then both the hook and the rule are dead weight.
 
 ## What you deliver
 

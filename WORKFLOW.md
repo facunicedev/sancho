@@ -64,6 +64,8 @@ The lane is chosen here and noted in `HANDOFF.md`. If it turns out to be a diffe
 
 A new entry in `Documents/TASKS.md` with what was asked, in their words, and `HANDOFF.md` up to date.
 
+**Give the entry a title that says what the task is**, because that title is what the task is called from then on, in conversation and in the files. The number stays behind it, holding the counter and making the entry findable, and it is written in brackets: "The three gates" (#21). A title that does not tell one task from another is not a title: "Improvements" or "Misc" force you to open the file to find out what they were.
+
 ## Step 3. Prior search
 
 Goes **before** the analysis, because it feeds the plan ([R06](rules/R06_search_before_acting.md)). Skipped when the task is purely internal or the fact is already verified here.
@@ -155,6 +157,8 @@ Walk it in order and stop at the first one that fits. None of the thresholds is 
 | **Skill** | The same procedure done three times, and two checkable statements can be written about its result | Cross-fire test: if one request triggers two skills, one is redundant | Its description overlaps another, or does not say when to use it |
 | **Agent** | The same worker is launched with the same instructions again and again, and its intermediate steps are of no use to the conversation | Count of repeated launches | It is expected to act on its own. An agent has to be called |
 | **Command** | The same long request gets typed by hand, and the action publishes, deletes or spends money | An unwanted trigger would cost something irreversible | Nobody types it |
+
+**An agent gets a model when it is born** (R38). Without that line it inherits the caller's, which is the biggest one, and counting costs the same as deciding.
 
 **There is no cap on skills.** There is a budget the program measures itself, and it penalises the skill nobody invokes. What to watch is overlap.
 

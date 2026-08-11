@@ -110,15 +110,31 @@ Veintiséis reglas, en `rules/`, indexadas a una línea cada una en `MEMORY.md`.
 
 ---
 
-## Las dos cosas que funcionan solas
+## Las cosas que funcionan solas
 
-Todo lo demás en Sancho es una instrucción escrita, o sea que depende de que el modelo se acuerde. Estas dos no.
+Todo lo demás en Sancho es una instrucción escrita, o sea que depende de que el modelo se acuerde. Estas no. **Tres avisan y dos impiden**, y esa diferencia es todo el diseño.
 
 **`line_caps.py`** vigila el tamaño de los archivos en cada escritura. Cuando tu bitácora pasa de 250 líneas, lo dice. La respuesta nunca es subir el límite. La respuesta es que toca resumir, y te nombra el comando que lo hace.
 
 **`repo_sweep.py`** corre al terminar cada turno y denuncia lo que está fuera de sitio: un archivo sin fila en ningún índice, un índice que apunta a algo que ya no existe, una bandeja de entrada que nadie vació, una regla copiada en dos sitios.
 
-Ese es todo el presupuesto de automatización. Dos guiones, y los dos solo saben avisar de que algo está mal. Ninguno mueve tus archivos. Un hook que actúa por su cuenta en el ordenador de otro es como se consiguen mensajes de desconocidos a medianoche.
+**`coherence.py`** también corre al terminar el turno, y caza los archivos que se contradicen: una ruta citada en un documento que no está en el disco, una frase que dice «las 32 reglas» habiendo 36 fichas, un historial creciendo dentro de un archivo que debería decir cómo se trabaja hoy.
+
+Esos tres solo saben avisar. **Los dos de abajo paran el trabajo de verdad**, y son los que conviene entender antes de instalar esto.
+
+**`the_gate.py` es el motivo de que tengas que teclear `/sign`.** Hasta que no lo hagas, no se escribe nada en tus carpetas de documentos, cálculos ni entregables. El asistente puede investigar, preparar y proponer; producir no. Cuando tecleas `/sign`, el checklist de `HANDOFF.md` se congela tal como está, y la firma vale solo para ese checklist y esa sesión: si la lista cambia, caduca sola.
+
+**Si te ves bloqueado y no sabes por qué, la llave es `/sign`.**
+
+**`research_guard.py`** impide que la conversación principal investigue por su cuenta en vez de pasárselo al agente `researcher`. La primera búsqueda suelta pasa; la segunda no, porque dos búsquedas seguidas ya son una investigación, y investigar en el hilo principal cuesta muchas veces lo que cuesta dentro de un agente.
+
+**Ninguno de los dos bloqueos se fía de nada que escriba el modelo.** Ese es justo el punto: una puerta que lee un archivo escrito por aquel a quien vigila no es una puerta. `the_gate.py` se apoya en un mensaje tuyo, y `research_guard.py` en la identidad de quien llama, que la pone el propio programa. Cada hook trae su `--selftest`, y lo que prueban es la propiedad, no la aritmética:
+
+```bash
+python .claude/hooks/the_gate.py --selftest
+```
+
+Ningún hook mueve ni borra tus archivos. Un hook que actúa por su cuenta en el ordenador de otro es como se consiguen mensajes de desconocidos a medianoche.
 
 ---
 

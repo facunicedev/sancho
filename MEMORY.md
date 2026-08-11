@@ -20,6 +20,8 @@
 | [R18](rules/R18_exhaust_deduction.md) | Exhaust what they already sent before asking for a fact. |
 | [R32](rules/R32_research_preferences.md) | Open by default and validated by reading. Popularity is not quality. |
 | [R35](rules/R35_plain_language.md) | Explain every decision in plain words. Jargon goes after, in brackets. |
+| [R38](rules/R38_model_fits_the_job.md) | Every agent declares the model its job needs. Not always the biggest. |
+| [R39](rules/R39_the_cause_not_the_symptom.md) | Fix the cause. Excluding the case that bothers you by hand only postpones it. |
 
 ## When producing a file
 
@@ -39,6 +41,7 @@
 |---|---|
 | [R15](rules/R15_commands_for_the_user.md) | Commands they type are given exactly as their shell expects. |
 | [R35](rules/R35_plain_language.md) | The same rule again, because this is where it is broken most. |
+| [R40](rules/R40_summarise_what_you_ask_them_to_sign.md) | What you ask them to sign gets summarised in the chat, never pointed at a file. |
 
 ## When tidying and closing
 
@@ -54,6 +57,7 @@
 | [R27](rules/R27_harvest_proposes.md) | What is learned is proposed in `Proposals/`, never written into memory. |
 | [R28](rules/R28_nothing_unfiled.md) | No file without a row in its index, in both directions. |
 | [R36](rules/R36_clear_the_session.md) | Suggest a fresh session actively, once the state is written down. |
+| [R37](rules/R37_no_history_in_working_files.md) | No working file explains why it changed. The why lives in git and the task log. |
 
 ## How this index grows
 
