@@ -99,7 +99,7 @@ The rules are different, and they do ship switched on. A rule is not a procedure
 
 ## What ships switched on
 
-Twenty-six rules, in `rules/`, indexed one line each in `MEMORY.md`. Every one of them was earned by getting something wrong first. The ones that matter most on day one:
+The default rules, in `rules/`, indexed one line each in `MEMORY.md`. Every one of them was earned by getting something wrong first. The ones that matter most on day one:
 
 - **Every figure is computed by a script**, and the script is kept next to its output. No mental arithmetic, ever ([R01](rules/R01_calculations_in_python.md)).
 - **Spreadsheet numbers are live formulas** against a raw data sheet, never pasted values ([R03](rules/R03_excel_formulas.md)).

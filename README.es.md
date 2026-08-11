@@ -94,7 +94,7 @@ Las reglas son otra cosa, y esas sí vienen encendidas. Una regla no es un proce
 
 ## Qué viene encendido
 
-Veintiséis reglas, en `rules/`, indexadas a una línea cada una en `MEMORY.md`. Todas se ganaron equivocándose antes. Las que más pesan el primer día:
+Las reglas de serie, en `rules/`, indexadas a una línea cada una en `MEMORY.md`. Todas se ganaron equivocándose antes. Las que más pesan el primer día:
 
 - **Toda cifra la calcula un guion**, y el guion se guarda junto a su salida. Nada de cuentas de cabeza ([R01](rules/R01_calculations_in_python.md)).
 - **Los números de una hoja de cálculo son fórmulas vivas** contra una hoja de datos crudos, nunca valores pegados ([R03](rules/R03_excel_formulas.md)).
