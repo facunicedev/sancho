@@ -9,6 +9,8 @@
 | Comando | Qué hace | Cuándo |
 |---|---|---|
 | `/sign` | Firma el checklist de la tarea en curso y abre la puerta de producción | Cuando has leído el checklist y estás de acuerdo |
+| `/approve` | Aplica las propuestas que nombres de `Proposals/`, las borra y lanza al `architect` detrás | Cuando una propuesta te parece bien |
+| `/notapprove` | Descarta las propuestas que nombres, con el motivo escrito en la bitácora | Cuando una propuesta no te convence |
 | `/left` | Dónde estamos: tarea en curso, tareas abiertas, decisiones esperando y lo que te toca a ti | Cuando quieras saberlo |
 | `/synthesis` | Resume la bitácora de tareas, reformula la tabla de decisión y lanza al agente `architect` a revisar el sistema | Cada 10 tareas, o cuando el hook de topes avisa de que la bitácora se pasó de su límite |
 

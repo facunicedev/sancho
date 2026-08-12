@@ -33,6 +33,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 STATE = os.path.join(ROOT, ".claude", "state")
 SIGNATURE = os.path.join(STATE, "frozen_checklist.md")
 HANDOFF = os.path.join(ROOT, "HANDOFF.md")
+CONFIG = os.path.join(ROOT, "sancho.md")
 
 # Where produced work lives. Writing here needs a frozen checklist. One row per
 # language, like the other hooks: a folder that does not exist never matches.
@@ -89,10 +90,25 @@ def fingerprint(text):
     return hashlib.sha1("\n".join(items).encode("utf-8")).hexdigest()[:16]
 
 
-def decide_write(rel_path, already_signed):
+def decide_write(rel_path, already_signed, configured=True):
     """(code, message). 0 passes, 2 blocks."""
     if rel_path is None:
         return 0, ""
+    # First run. The language question was written in CLAUDE.md as prose and prose
+    # is not a gate: on a real first run the model created sancho.md by itself,
+    # picked English and filled in a screenshots path nobody had given it. The
+    # answer names the folders on disk, so guessing it wrong is not a wrong reply,
+    # it is a repository built on the wrong labels.
+    if not configured and rel_path != "sancho.md":
+        return 2, (
+            "First run: sancho.md does not exist, so the language is not settled yet.\n"
+            "You were about to write in %s\n"
+            "Ask ONE question and nothing else, then stop and wait for the answer:\n"
+            "  In which language should I work? I will speak it, name the folders in\n"
+            "  it, and write every document in it.  1. English  2. Espanol  3. another\n"
+            "Do not pick it yourself, do not infer it from what they typed, and do not\n"
+            "create a single folder before they answer. Only sancho.md may be written\n"
+            "first, with their answer in it (format in SETUP.md)." % rel_path)
     if rel_path.startswith(".claude/state/"):
         return 2, ("The signature file is written by its hook and by nobody else.\n"
                    "If the model could write there, the freeze would be the model's\n"
@@ -139,10 +155,33 @@ def signed(session):
     return signature_valid(_stored(), session, text)
 
 
+FIRST_RUN_ASK = (
+    "FIRST RUN. sancho.md does not exist, so the language is not settled.\n"
+    "Before answering anything else, ask this and only this, then stop and wait:\n"
+    "  In which language should I work? I will speak it, name the folders in it,\n"
+    "  and write every document in it.  1. English  2. Espanol  3. another\n"
+    "Do not pick it yourself. Do not infer it from the language they wrote in:\n"
+    "someone types a one-word message in one language and works in another.\n"
+    "Do not create a single folder, and do not start the task they asked for.\n"
+    "When they answer, write sancho.md first (format in SETUP.md), then the folders.")
+
+
 def mode_sign():
+    """UserPromptSubmit. Two jobs, and the order matters.
+
+    Signing is one. The other is the first run: what this hook prints on stdout
+    reaches the model BEFORE it answers, and that is the only place an instruction
+    can still change the reply. The gate on writes was not enough, and a real test
+    proved it: the person typed a two-letter message, the model answered in prose
+    without writing anything, and nothing had a chance to fire. A gate that only
+    watches writes never sees a conversation.
+    """
     try:
         event = json.load(sys.stdin)
     except Exception:
+        return
+    if not os.path.exists(CONFIG):
+        print(FIRST_RUN_ASK)
         return
     if not approves(event.get("prompt", "")):
         return
@@ -174,15 +213,18 @@ def mode_write():
     if not path:
         return
     code, message = decide_write(
-        relative(path), signed(event.get("session_id", "")))
+        relative(path), signed(event.get("session_id", "")), os.path.exists(CONFIG))
     if code == 2:
         print(message, file=sys.stderr)
         sys.exit(2)
 
 
-def next_step(handoff_text, has_signature):
+def next_step(handoff_text, has_signature, configured=True):
     """The next MANDATORY step, worked out from the state. A block with no way out
     turns into doing it by hand, which is how a sibling harness sank a whole run."""
+    if not configured:
+        return ("NEXT STEP: ask the language question and nothing else, then stop. "
+                "Sancho does not run until sancho.md exists (SETUP.md).")
     if not has_checklist(handoff_text):
         return ("NEXT STEP: write the task checklist in HANDOFF.md, saying who runs "
                 "each item (WORKFLOW step 4).")
@@ -212,7 +254,8 @@ def mode_next():
         text = io.open(HANDOFF, encoding="utf-8").read()
     except Exception:
         text = ""
-    message = next_step(text, signed(event.get("session_id", "")))
+    message = next_step(text, signed(event.get("session_id", "")),
+                        os.path.exists(CONFIG))
     # Same as coherence.py: on Stop, stderr with exit code 0 never reaches the model.
     print(json.dumps({
         "systemMessage": message,
@@ -260,6 +303,29 @@ def selftest():
     assert not approves("I need you to research the coffee market")
     assert not approves("I will not sign this"), "the command opens the message, not the middle"
 
+    # FIRST RUN. Until sancho.md exists nothing at all may be written, not even the
+    # files that are otherwise free: the language names the folders, so starting
+    # before the answer builds the repository on the wrong labels. This is here and
+    # not in CLAUDE.md because on a real first run the model read that prose, chose
+    # English on its own and filled in a screenshots path nobody had given it.
+    for anything in ("HANDOFF.md", "rules/R01_x.md", "Inbox/note.txt",
+                     "Documents/TASKS.md", ".claude/hooks/x.py"):
+        assert decide_write(anything, True, configured=False)[0] == 2, anything
+    # ...except sancho.md itself, or the answer could never be written down.
+    assert decide_write("sancho.md", False, configured=False)[0] == 0
+    # The block asks the question instead of just refusing.
+    assert "language" in decide_write("HANDOFF.md", True, configured=False)[1]
+    # And once it exists, the gate goes back to being about the checklist.
+    assert decide_write("HANDOFF.md", False, configured=True)[0] == 0
+    assert "language" in next_step("- [x] one", True, configured=False)
+    # And the question reaches the model BEFORE it answers, which is the only
+    # moment that can still change the reply. Blocking writes was not enough: the
+    # first real test was a two-letter message answered in prose, with no write to
+    # block. The text has to name what not to do, or "es" gets read as the answer.
+    assert "1. English" in FIRST_RUN_ASK and "Espanol" in FIRST_RUN_ASK
+    assert "infer it from the language they wrote in" in FIRST_RUN_ASK
+    assert "do not start the task" in FIRST_RUN_ASK
+
     # The next step comes from the state, not from what anyone remembers.
     assert "checklist" in next_step("nothing here", False)
     assert "/sign" in next_step("- [ ] one", False)
@@ -282,7 +348,7 @@ def selftest():
     # And an extended checklist is no good either: adding an item means saying so.
     assert not signature_valid(good, "s1", items + "\n- [ ] three")
 
-    print("the_gate --selftest: 29 checks OK")
+    print("the_gate --selftest: 40 checks OK")
 
 
 if __name__ == "__main__":

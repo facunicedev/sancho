@@ -9,6 +9,8 @@
 | Command | What it does | When |
 |---|---|---|
 | `/sign` | Signs the checklist of the current task and opens the production gate | When you have read the checklist and agree with it |
+| `/approve` | Applies the proposals you name from `Proposals/`, deletes them and runs the `architect` behind | When a proposal looks right to you |
+| `/notapprove` | Discards the proposals you name, with the reason written into the task log | When a proposal does not convince you |
 | `/left` | Where things stand: current task, open ones, decisions waiting, and what is yours to do | Whenever you want to know |
 | `/synthesis` | Summarises the task log, rebuilds the decision table and sends the `architect` agent to review the system | Every 10 tasks, or when the cap hook says the log went over its limit |
 

@@ -42,7 +42,7 @@ Several of them are enforced by code rather than by memory, so they do not depen
 | `.claude/hooks/line_caps.py` | [R12](rules/R12_line_caps.md) | On every write |
 | `.claude/hooks/repo_sweep.py` | [R28](rules/R28_nothing_unfiled.md), [R10](rules/R10_inbox.md), [R23](rules/R23_sweep_on_close.md) | At the end of the turn |
 | `.claude/hooks/coherence.py` | Cited paths that do not exist, counts that do not add up, and [R37](rules/R37_no_history_in_working_files.md) | At the end of the turn |
-| `.claude/hooks/the_gate.py` | **Blocks** producing without a checklist they signed with `/sign` ([R05](rules/R05_approval_to_close.md)), and states the next step | Before writing, on signing, and at the end of the turn |
+| `.claude/hooks/the_gate.py` | **Blocks** everything until `sancho.md` exists, so the language below gets asked and not guessed; then **blocks** producing without a checklist they signed with `/sign` ([R05](rules/R05_approval_to_close.md)), and states the next step | Before writing, on signing, and at the end of the turn |
 
 The three that sweep the repository share [`hooks/common.py`](.claude/hooks/common.py), which decides what belongs to the repository by asking git. **What the `.gitignore` covers is not watched**: it is working material, and its sentences are not claims anyone here has to hold up. `common.py` also keeps `Calculations/telemetry/warnings.log`, one line per warning and day, so a warning that has been there for weeks can be told from one that appeared this morning.
 

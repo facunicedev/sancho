@@ -4,6 +4,8 @@ Sancho asks exactly one thing before it starts working: **which language**. Ever
 
 The reason it has to be asked and cannot be guessed: the answer sets three things at once, and they must agree. The language Sancho speaks to you, the language it writes documents in, and the names of the folders on your disk. A repository with English folder names and Spanish documents inside is the worst of both.
 
+**And it is the hook that enforces it, not the instruction.** Until `sancho.md` exists, `the_gate.py` blocks every write except `sancho.md` itself. This is not belt and braces: on a real first run the model read the instruction in `CLAUDE.md`, picked English on its own and filled in a screenshots path nobody had given it. Prose asking a model to ask is not a question, it is a suggestion.
+
 ## What gets written
 
 `sancho.md`, at the root, and it is the only file the setup creates:
