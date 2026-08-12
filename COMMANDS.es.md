@@ -25,7 +25,6 @@ Hooks. No hay que acordarse de ninguno: corren solos.
 | `line_caps.py` | Avisa cuando un archivo de control pasa de su tope de líneas | En cada escritura |
 | `repo_sweep.py` | Avisa de archivos que faltan en su índice, bandejas sin vaciar y basura olvidada | Al terminar el turno |
 | `coherence.py` | Avisa de rutas citadas que no existen y de cuentas que no cuadran | Al terminar el turno |
-| `research_guard.py` | **Impide** que el hilo principal investigue en vez de lanzar al `researcher` | Antes de buscar en la web |
 | `the_gate.py` | **Impide** producir sin un checklist que hayas firmado, y dice cuál es el paso siguiente | Antes de escribir, al firmar y al terminar el turno |
 
 **Tres avisan y dos impiden, que es la diferencia que importa.** Un aviso se puede ignorar; un bloqueo no. Impedir se reserva a las dos cosas que estropean el trabajo: producir antes de haber acordado qué se produce, e investigar en el sitio caro.

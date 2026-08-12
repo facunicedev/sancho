@@ -21,16 +21,6 @@
             "statusMessage": "Checking the production gate"
           }
         ]
-      },
-      {
-        "matcher": "WebSearch|WebFetch",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/research_guard.py\"",
-            "statusMessage": "Checking who is searching"
-          }
-        ]
       }
     ],
     "PostToolUse": [

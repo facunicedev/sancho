@@ -22,6 +22,7 @@
 | [R35](rules/R35_plain_language.md) | Explain every decision in plain words. Jargon goes after, in brackets. |
 | [R38](rules/R38_model_fits_the_job.md) | Every agent declares the model its job needs. Not always the biggest. |
 | [R39](rules/R39_the_cause_not_the_symptom.md) | Fix the cause. Excluding the case that bothers you by hand only postpones it. |
+| [R41](rules/R41_write_as_you_go.md) | State is written as you go. The session gets cut without warning. |
 
 ## When producing a file
 

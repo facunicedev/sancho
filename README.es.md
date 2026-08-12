@@ -120,15 +120,13 @@ Todo lo demás en Sancho es una instrucción escrita, o sea que depende de que e
 
 **`coherence.py`** también corre al terminar el turno, y caza los archivos que se contradicen: una ruta citada en un documento que no está en el disco, una frase que dice «las 32 reglas» habiendo 36 fichas, un historial creciendo dentro de un archivo que debería decir cómo se trabaja hoy.
 
-Esos tres solo saben avisar. **Los dos de abajo paran el trabajo de verdad**, y son los que conviene entender antes de instalar esto.
+Esos tres solo saben avisar. **El de abajo para el trabajo de verdad**, y es el que conviene entender antes de instalar esto.
 
 **`the_gate.py` es el motivo de que tengas que teclear `/sign`.** Hasta que no lo hagas, no se escribe nada en tus carpetas de documentos, cálculos ni entregables. El asistente puede investigar, preparar y proponer; producir no. Cuando tecleas `/sign`, el checklist de `HANDOFF.md` se congela tal como está, y la firma vale solo para ese checklist y esa sesión: si la lista cambia, caduca sola.
 
 **Si te ves bloqueado y no sabes por qué, la llave es `/sign`.**
 
-**`research_guard.py`** impide que la conversación principal investigue por su cuenta en vez de pasárselo al agente `researcher`. La primera búsqueda suelta pasa; la segunda no, porque dos búsquedas seguidas ya son una investigación, y investigar en el hilo principal cuesta muchas veces lo que cuesta dentro de un agente.
-
-**Ninguno de los dos bloqueos se fía de nada que escriba el modelo.** Ese es justo el punto: una puerta que lee un archivo escrito por aquel a quien vigila no es una puerta. `the_gate.py` se apoya en un mensaje tuyo, y `research_guard.py` en la identidad de quien llama, que la pone el propio programa. Cada hook trae su `--selftest`, y lo que prueban es la propiedad, no la aritmética:
+**El bloqueo no se fía de nada que escriba el modelo.** Ese es justo el punto: una puerta que lee un archivo escrito por aquel a quien vigila no es una puerta. `the_gate.py` se apoya en algo que el modelo no puede fabricar: un mensaje tuyo. Cada hook trae su `--selftest`, y lo que prueban es la propiedad, no la aritmética:
 
 ```bash
 python .claude/hooks/the_gate.py --selftest

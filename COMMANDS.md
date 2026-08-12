@@ -25,7 +25,6 @@ Hooks. You never have to remember any of them: they run themselves.
 | `line_caps.py` | Warns when a control file goes over its line cap | On every write |
 | `repo_sweep.py` | Warns about files missing from their index, inboxes left full, and leftover junk | At the end of the turn |
 | `coherence.py` | Warns about cited paths that do not exist and counts that do not add up | At the end of the turn |
-| `research_guard.py` | **Blocks** the main thread from researching instead of sending the `researcher` | Before any web search |
 | `the_gate.py` | **Blocks** producing without a checklist you signed, and says what the next step is | Before writing, on `/sign`, and at the end of the turn |
 
 **Three warn and two block, and that is the difference that matters.** A warning you can ignore; a block you cannot. Blocking is kept for the two things that ruin the work: producing before you have agreed what is being produced, and researching in the expensive place.
