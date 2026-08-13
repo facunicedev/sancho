@@ -6,7 +6,7 @@
 >
 > Not to be confused with `Knowledge/PROFILE.md`, which answers **who they are**; `Documents/TASKS.md`, which answers **what was done**; or `HANDOFF.md`, which answers **where the session stopped**.
 >
-> These twenty-six are the **defaults**. They ship switched on because they are what office work needs, and every one of them was earned by getting something wrong first. Any of them can be turned off: say so, and the card moves to the archive with the date and the reason. The numbering has gaps on purpose, so a rule keeps its number when it travels between repositories.
+> These thirty-five are the **defaults**. They ship switched on because they are what office work needs, and every one of them was earned by getting something wrong first. Any of them can be turned off: say so, and the card moves to the archive with the date and the reason. The numbering has gaps on purpose, so a rule keeps its number when it travels between repositories.
 
 ## Always, on any task
 
@@ -22,7 +22,8 @@
 | [R35](rules/R35_plain_language.md) | Explain every decision in plain words. Jargon goes after, in brackets. |
 | [R38](rules/R38_model_fits_the_job.md) | Every agent declares the model its job needs. Not always the biggest. |
 | [R39](rules/R39_the_cause_not_the_symptom.md) | Fix the cause. Excluding the case that bothers you by hand only postpones it. |
-| [R41](rules/R41_write_as_you_go.md) | State is written as you go. The session gets cut without warning. |
+| [R41](rules/R41_write_as_you_go.md) | State is written as you go. The session gets cut without warning. A quota gap is retried. |
+| [R42](rules/R42_look_on_disk_before_searching_outside.md) | Look on disk before searching outside. The source's cut-off, and another repository's path, get read, not remembered. |
 
 ## When producing a file
 
@@ -59,6 +60,9 @@
 | [R28](rules/R28_nothing_unfiled.md) | No file without a row in its index, in both directions. |
 | [R36](rules/R36_clear_the_session.md) | Suggest a fresh session actively, once the state is written down. |
 | [R37](rules/R37_no_history_in_working_files.md) | No working file explains why it changed. The why lives in git and the task log. |
+| [R44](rules/R44_a_filter_needs_a_field_to_live_in.md) | A discard criterion needs a field to store its answer first. A missing value discards nobody. |
+| [R45](rules/R45_setting_aside_is_not_mixing_back_in.md) | What is set aside gets its own place, a written reason, and never rises to the top. |
+| [R46](rules/R46_ticking_an_item_is_not_rewriting_it.md) | Ticking an item is changing the box and nothing else. The result goes in the task log. |
 
 ## How this index grows
 
