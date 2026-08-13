@@ -90,7 +90,20 @@ def fingerprint(text):
     return hashlib.sha1("\n".join(items).encode("utf-8")).hexdigest()[:16]
 
 
-def decide_write(rel_path, already_signed, configured=True):
+def is_subagent(event):
+    """True if the one writing is a subagent. The program says so, not the model.
+
+    A subagent ALWAYS runs in another session, so no signature of its own can ever
+    exist: `signature_valid` compares the session id and it never matches. The
+    signal that can be checked is where its transcript lives, which Claude Code
+    keeps in `<session>/subagents/agent-*.jsonl`.
+    """
+    if event.get("isSidechain"):
+        return True
+    return "/subagents/" in (event.get("transcript_path") or "").replace("\\", "/")
+
+
+def decide_write(rel_path, already_signed, configured=True, subagent=False):
     """(code, message). 0 passes, 2 blocks."""
     if rel_path is None:
         return 0, ""
@@ -113,6 +126,11 @@ def decide_write(rel_path, already_signed, configured=True):
         return 2, ("The signature file is written by its hook and by nobody else.\n"
                    "If the model could write there, the freeze would be the model's\n"
                    "and not theirs, and the gate would stop being a gate.")
+    # A subagent is covered by the signature of the thread that launched it, which
+    # already came through here. Asking it for one of its own leaves the architect
+    # with nowhere to deliver, and a hook walked around by hand ends up removed.
+    if subagent:
+        return 0, ""
     for free in FREE:
         if rel_path == free or rel_path.startswith(free):
             return 0, ""
@@ -213,7 +231,8 @@ def mode_write():
     if not path:
         return
     code, message = decide_write(
-        relative(path), signed(event.get("session_id", "")), os.path.exists(CONFIG))
+        relative(path), signed(event.get("session_id", "")), os.path.exists(CONFIG),
+        is_subagent(event))
     if code == 2:
         print(message, file=sys.stderr)
         sys.exit(2)
@@ -286,8 +305,25 @@ def selftest():
                  "rules/R01_calculations_in_python.md", ".claude/hooks/x.py"):
         assert decide_write(free, False)[0] == 0, free
 
-    # And the model cannot write its own signature: that is what makes it worth something.
+    # And the model cannot write its own signature: that is what makes it worth
+    # something. Not even a subagent, which is the one exemption below.
     assert decide_write(".claude/state/frozen_checklist.md", True)[0] == 2
+    assert decide_write(".claude/state/frozen_checklist.md", True, subagent=True)[0] == 2
+
+    # A SUBAGENT is covered by the signature of the thread that launched it. It runs
+    # in another session, so a signature of its own can never exist and it was left
+    # blocked with no way out: an architect report ended up outside the repository.
+    assert decide_write("Documents/X/report.md", False, subagent=True)[0] == 0
+    assert decide_write("Documents/X/report.md", False, subagent=False)[0] == 2, \
+        "and the main thread without a signature is still blocked"
+    # The mark comes from the program, not from the model: where the transcript
+    # lives. `isSidechain` is not on the event, it is a field of the transcript.
+    assert is_subagent({"transcript_path": "/p/9e8/subagents/agent-1.jsonl"})
+    assert is_subagent({"transcript_path": r"C:\p\9e8\subagents\agent-1.jsonl"}), \
+        "the separator is the platform's, and on Windows it is the other one"
+    assert is_subagent({"isSidechain": True})
+    assert not is_subagent({"transcript_path": "/p/9e8febd1.jsonl"})
+    assert not is_subagent({}), "with no mark it is the main thread, which is stricter"
 
     # The block says how to comply.
     assert "HANDOFF.md" in decide_write("Documents/x/y.docx", False)[1]
@@ -348,7 +384,7 @@ def selftest():
     # And an extended checklist is no good either: adding an item means saying so.
     assert not signature_valid(good, "s1", items + "\n- [ ] three")
 
-    print("the_gate --selftest: 40 checks OK")
+    print("the_gate --selftest: 49 checks OK")
 
 
 if __name__ == "__main__":
