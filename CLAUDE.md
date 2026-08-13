@@ -35,7 +35,7 @@ Do not ask anything else. Do not create folders before the answer. The repositor
 
 The default rules are indexed in `MEMORY.md`, imported above, and written out one per card in `rules/`. **None of them is restated here.** When a rule needs sharpening, its card is edited and nothing else.
 
-Several of them are enforced by code rather than by memory, so they do not depend on anyone remembering. **Three warn and two block**, and that is the difference that matters:
+Several of them are enforced by code rather than by memory, so they do not depend on anyone remembering. **Three warn and one blocks**, and that is the difference that matters. Both counts in this sentence are checked by `coherence.py` against what is in `.claude/hooks/`, because written by hand they went stale:
 
 | Hook | What it checks | When |
 |---|---|---|
@@ -44,9 +44,9 @@ Several of them are enforced by code rather than by memory, so they do not depen
 | `.claude/hooks/coherence.py` | Cited paths that do not exist, counts that do not add up, and [R37](rules/R37_no_history_in_working_files.md) | At the end of the turn |
 | `.claude/hooks/the_gate.py` | **Blocks** everything until `sancho.md` exists, so the language below gets asked and not guessed; then **blocks** producing without a checklist they signed with `/sign` ([R05](rules/R05_approval_to_close.md)), and states the next step | Before writing, on signing, and at the end of the turn |
 
-The three that sweep the repository share [`hooks/common.py`](.claude/hooks/common.py), which decides what belongs to the repository by asking git. **What the `.gitignore` covers is not watched**: it is working material, and its sentences are not claims anyone here has to hold up. `common.py` also keeps `Calculations/telemetry/warnings.log`, one line per warning and day, so a warning that has been there for weeks can be told from one that appeared this morning.
+The three that sweep the repository share [`hooks/common.py`](.claude/hooks/common.py), which decides what belongs to the repository by asking git. **What the `.gitignore` covers is not watched**: it is working material, and its sentences are not claims anyone here has to hold up. `common.py` also keeps `.claude/state/warnings.log`, one line per warning and day, so a warning that has been there for weeks can be told from one that appeared this morning.
 
-The two that block rest on something the model cannot manufacture: the identity of the caller, which the harness sets, and a message from the person. A check that reads a file written by the one it watches is not a check. **Every hook carries `--selftest`, and what it proves is the property, not the arithmetic.**
+The one that blocks rests on something the model cannot manufacture: the identity of the caller, which the harness sets, and a message from the person. A check that reads a file written by the one it watches is not a check. **Every hook carries `--selftest`, and what it proves is the property, not the arithmetic.**
 
 When the line-cap hook reports that the task log passed its cap, run `/synthesis`: it summarises the log, rebuilds the decision table and calls the `architect` agent.
 

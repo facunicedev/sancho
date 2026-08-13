@@ -29,7 +29,7 @@ Hooks. No hay que acordarse de ninguno: corren solos.
 | `coherence.py` | Avisa de rutas citadas que no existen y de cuentas que no cuadran | Al terminar el turno |
 | `the_gate.py` | **Impide** producir sin un checklist que hayas firmado, y dice cuál es el paso siguiente | Antes de escribir, al firmar y al terminar el turno |
 
-**Tres avisan y dos impiden, que es la diferencia que importa.** Un aviso se puede ignorar; un bloqueo no. Impedir se reserva a las dos cosas que estropean el trabajo: producir antes de haber acordado qué se produce, e investigar en el sitio caro.
+**Tres avisan y uno impide, que es la diferencia que importa.** Un aviso se puede ignorar; un bloqueo no. Impedir se reserva a lo único que estropea el trabajo: producir antes de haber acordado qué se produce.
 
 **Ninguno vigila lo que está en el `.gitignore`.** Quién es del repositorio lo decide git, y no una lista de nombres de carpeta escrita dentro de cada hook. Apunta un hook a un conjunto de datos descargado o a una copia de seguridad y te informará de frases que no ha escrito nadie de aquí.
 

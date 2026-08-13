@@ -13,6 +13,7 @@ to remember to edit every hook. Here we ask git.
 import datetime
 import io
 import os
+import re
 import subprocess
 import sys
 
@@ -73,6 +74,20 @@ def folders(root=ROOT):
             and not any(c.startswith(f + "/") for f in out)]
 
 
+def key(warning):
+    """What identifies a warning underneath its figures and its names.
+
+    The same chronic warning changes text every day because it carries the line
+    count or the list of spare files inside it, so comparing the whole line never
+    groups anything: every day looks like a new warning. Digit groups are dropped,
+    the text is cut at the first colon and the first words are kept, which is the
+    cheapest thing that tells one warning from another without telling its
+    versions apart.
+    """
+    without_figures = re.sub(r"\d+", "#", " ".join((warning or "").split()))
+    return " ".join(without_figures.split(":")[0].split()[:8])
+
+
 def _log_path(root):
     return os.path.join(root, LOG)
 
@@ -102,12 +117,14 @@ def record(warnings, hook, root=ROOT, today=None):
             already = set(io.open(path, encoding="utf-8").read().splitlines())
         except IOError:
             already = set()
+        seen = set(tuple(l.split("\t")[:3]) for l in already)
         fresh = []
         for a in warnings:
-            line = "\t".join((day, hook, " ".join(a.split())))
-            if line not in already:
-                already.add(line)
-                fresh.append(line)
+            text = " ".join(a.split())
+            k = key(text)
+            if (day, hook, k) not in seen:
+                seen.add((day, hook, k))
+                fresh.append("\t".join((day, hook, k, text)))
         if fresh:
             with io.open(path, "a", encoding="utf-8") as fh:
                 fh.write("".join(l + "\n" for l in fresh))
@@ -164,7 +181,17 @@ def selftest():
             "each hook keeps its own count"
         assert record([], "sweep", d, "2026-08-10") == 0, "no warnings, nothing written"
         lines = io.open(_log_path(d), encoding="utf-8").read().splitlines()
-        assert len(lines) == 3 and all(l.count("\t") == 2 for l in lines), lines
+        assert len(lines) == 3 and all(l.count("\t") == 3 for l in lines), lines
+
+        # The key's property: the same warning with different figures inside is ONE
+        # warning. Comparing whole lines made every day look like a new one, and
+        # then nothing was ever chronic.
+        assert key("HANDOFF.md is at 71 lines of 70") == key("HANDOFF.md is at 84 lines of 70")
+        assert key("3 loose files: a.md, b.md") == key("5 loose files: c.md")
+        assert key("HANDOFF.md is at 71 lines of 70") != key("3 loose files: a.md, b.md")
+        assert record(["HANDOFF.md is at 71 lines of 70"], "caps", d, "2026-08-12") == 1
+        assert record(["HANDOFF.md is at 84 lines of 70"], "caps", d, "2026-08-12") == 0, \
+            "the same warning with another figure is not a second warning"
         # And it never breaks the hook that calls it, even with an impossible target.
         assert record(["x"], "sweep", os.path.join(d, "visible.md")) == 0
 

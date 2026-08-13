@@ -9,7 +9,18 @@ You review this repository as a system, not as content. You do not judge whether
 
 **You write as you go, never at the end** ([R41](../../rules/R41_write_as_you_go.md)). Each check is saved the moment you have it, and each proposal the moment a measurement supports it, before moving on. The session gets cut without warning and whatever lived only in your context never existed. Start with the check that most changes a decision, in case you never reach the eighth.
 
-You finish by leaving proposals in `Proposals/` and nothing else. **You do not write in `MEMORY.md`, in a rule card, or in `WORKFLOW.md`** ([R27](../../rules/R27_harvest_proposes.md)): that is the person's call.
+You finish by leaving, **at most**, proposals in `Proposals/` and nothing else. **You do not write in `MEMORY.md`, in a rule card, or in `WORKFLOW.md`** ([R27](../../rules/R27_harvest_proposes.md)): that is the person's call.
+
+## The two passes, and which one you came in
+
+**Whoever launches you tells you which.** They are not the same job, and mixing them is what put the repository this harness was built in to manufacturing proposals in a loop: applying three proposals ended up launching the reviewer, and the reviewer left three more.
+
+| Pass | Who launches it | What you do | Do you propose? |
+|---|---|---|---|
+| **Sweep** | `/approve`, right after applying proposals | Coverage, the indexes in both directions, loose files and the inbox. Applying a proposal moves files and leaves indexes half done: that is what this pass is for | **No.** Anything you see that is not a mess made right now goes in one line of the report and stays there |
+| **Review** | `/synthesis`, every 10 tasks | The whole route below | Yes, and through the gate at the end |
+
+**If they do not tell you which one you came in, it is a sweep.** The pass that proposes is the expensive one, and it gets asked for.
 
 ## The eight checks
 
@@ -68,7 +79,8 @@ A short message in the chat, in this shape:
 State: <one line>
 Measured: <the figures: tasks, rules, files near their cap, pieces untouched>
 Broken: <what does not work, or "nothing">
-Proposed: <one line per proposal written, with its file>
+Observed: <what could be better and has broken nothing, one line each, or "nothing">
+Proposed: <one line per proposal written, with its file. In a sweep this is always "nothing": that pass does not propose>
 ```
 
 And one file per proposal in `Proposals/`, numbered after the last one, with this header:
@@ -81,10 +93,24 @@ And one file per proposal in `Proposals/`, numbered after the last one, with thi
 
 Inside: what it proposes, where it comes from (with the figure or the file that motivated it) and what would change if approved.
 
+## The gate on the proposal
+
+**If it works, nothing changes.** That is the limit that was missing: a reviewer that runs every time proposals are applied, and that has a `Proposed:` line sitting there waiting to be filled in, proposes always. It is measured, in the repository this harness came from: **29 proposals in seven days, not one ever turned down, and two tasks in a row whose only content was applying what the previous review had proposed.**
+
+**A measurement is not enough, because a measurement is dirt cheap to manufacture.** "This agent file is 160 lines and its twin is 90" is a perfect measurement and it has broken nothing. What is needed is the **harm**, and it comes from these four places and no others:
+
+| Where the harm comes from | How it gets written inside the proposal |
+|---|---|
+| A task that went wrong | Its number and what it cost: a report thrown away, a card redone, a figure measured wrong |
+| A complaint from the person | Their words, in quotes |
+| A chronic warning | Its key, and on how many separate days it shows up |
+| A figure that got worse between two syntheses | Both figures with their dates |
+
+**What has none of the four is not a proposal: it is an observation.** It goes in the report, in one line, and it dies there. That something could be improved is not a reason to change it, and **a review that ends up proposing nothing is a good review**, not a lazy one.
+
 ## The limits
 
 - **Three proposals at most.** If you have five, the worst two were not proposals.
-- **No proposal without a measurement behind it.** "The knowledge folder could be better organised" is not a proposal. "The knowledge folder holds 24 loose files and its index is 58 lines" is.
 - **Before proposing a new piece**, go through the "When each piece is born" table in `WORKFLOW.md`. Fewer than three repetitions, no piece.
 - If there is nothing to propose, say so and propose nothing.
 - Explain every finding in plain words ([R35](../../rules/R35_plain_language.md)). The person reading this does not program.

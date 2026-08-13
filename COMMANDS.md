@@ -29,7 +29,7 @@ Hooks. You never have to remember any of them: they run themselves.
 | `coherence.py` | Warns about cited paths that do not exist and counts that do not add up | At the end of the turn |
 | `the_gate.py` | **Blocks** producing without a checklist you signed, and says what the next step is | Before writing, on `/sign`, and at the end of the turn |
 
-**Three warn and two block, and that is the difference that matters.** A warning you can ignore; a block you cannot. Blocking is kept for the two things that ruin the work: producing before you have agreed what is being produced, and researching in the expensive place.
+**Three warn and one blocks, and that is the difference that matters.** A warning you can ignore; a block you cannot. Blocking is kept for the one thing that ruins the work: producing before you have agreed what is being produced.
 
 **None of them watches anything listed in `.gitignore`.** What belongs to the repository is decided by git, not by a list of folder names written inside each hook. Point a hook at a downloaded dataset or a backup and it will report on sentences nobody here wrote.
 

@@ -187,7 +187,7 @@ Files that get read in full have a ceiling, checked by `.claude/hooks/line_caps.
 |---|---|
 | A document is superseded | To the archive, with its date and reason ([R26](rules/R26_archive_dont_delete.md)) |
 | Every 10 tasks, **or when `TASKS.md` passes 250 lines** | The cap hook fires and `/synthesis` runs ([R13](rules/R13_synthesis.md)) |
-| In that same `/synthesis` | The `architect` agent reviews the system and leaves at most three proposals |
+| In that same `/synthesis` | The `architect` agent reviews the system and leaves **at most** three proposals, none without a harm behind it |
 | Every 10 tasks | Every rule is reviewed: does it change behaviour? The one that changes nothing is archived |
 | Every three months | Check that the paths cited still exist |
 | Every three months | Which piece has not been touched? If none has, the system has stopped learning |

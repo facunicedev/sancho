@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Catches files that contradict each other, or themselves.
 
-Stop hook. Three checks, all deterministic: they are answered without reading to
+Stop hook. Four checks, all deterministic: they are answered without reading to
 understand, which is exactly the line between what a hook does and what the
 `architect` agent does.
 
@@ -10,7 +10,10 @@ understand, which is exactly the line between what a hook does and what the
      that named it are left pointing at nothing.
   2. Counts that do not add up. A sentence like "the 32 rules" compared against
      the cards that actually exist.
-  3. A change log living inside a working file (R37).
+  3. Counts of harness pieces: "four hooks" and "the two that block", against what
+     is in .claude/hooks/. A sentence written when one hook blocked stays written
+     when three do.
+  4. A change log living inside a working file (R37).
 
 Why a hook and not a periodic review: an architect pass can run with 34 cards in
 front of it and CLAUDE.md saying 32, leave three proposals and notice none of it.
@@ -21,6 +24,7 @@ It always exits 0: it warns, it does not block. Blocking is `the_gate.py`.
     python .claude/hooks/coherence.py --selftest
 """
 
+import ast
 import io
 import json
 import os
@@ -73,8 +77,28 @@ COUNT = re.compile(r"\bthe\s+(\d{1,3})\s+(rules)\b", re.IGNORECASE)
 
 # And only in the files that ASSERT how the repository stands today. A task log does
 # not assert: it quotes what was found one day, and that number was true then.
-ASSERT = ("CLAUDE.md", "MEMORY.md", "WORKFLOW.md",
+ASSERT = ("CLAUDE.md", "MEMORY.md", "WORKFLOW.md", "COMMANDS.md", "COMMANDS.es.md",
           "Knowledge/KNOWLEDGE.md", "Conocimiento/CONOCIMIENTO.md")
+
+# The same idea with the harness pieces instead of the rules: "four hooks", "the two
+# that block". Both shapes were found false here: the table lists four hooks and only
+# one of them blocks, and the sentence saying two kept standing after the researcher
+# guard was withdrawn.
+#
+# Figures go written as words, which is how they are written in prose. Up to twelve:
+# a count of pieces past that gets written in digits anyway, and digits already read.
+NUMBERS = {"a": 1, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
+           "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12}
+
+# Only the bare count asserts the total. "two hooks of Sancho" and "the three hooks
+# that sweep the repository" name a subset, and demanding the total of them is warning
+# about what it is not.
+HOOK_COUNT = re.compile(
+    r"\b([\w]+)\s+hooks\b(?!\s+(?:of|that|with|without|for|in|from)\b)", re.IGNORECASE)
+BLOCKERS = re.compile(r"\b(?:the\s+)?([\w]+)\s+that\s+(?:block|blocks|refuse|refuses)\b",
+                      re.IGNORECASE)
+WARNERS = re.compile(r"\b(?:the\s+)?([\w]+)\s+that\s+(?:warn|warns)\b", re.IGNORECASE)
+SPLIT = re.compile(r"\b([\w]+)\s+warns?\s+and\s+([\w]+)\s+blocks?\b", re.IGNORECASE)
 
 # The `*` belongs in the character class: without it the regex stopped at the star
 # and handed back `.claude/skills`, a truncated prefix that looks like a real path
@@ -131,7 +155,66 @@ def how_many_rules():
     return None
 
 
-def review(text, name, exists, n_rules, scripts=None):
+def number(word):
+    """The figure that word writes, or None if it writes none."""
+    if word.isdigit():
+        return int(word)
+    return NUMBERS.get(word.lower())
+
+
+def blocks(source):
+    """True if that script really exits with code 2 somewhere.
+
+    Code 2 is looked for in the tree and not in the text: searching the text, this
+    very script counted itself as blocking, because its own selftest writes that
+    line inside a string. A comment naming it would do the same.
+    """
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return False
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not node.args:
+            continue
+        what = getattr(node.func, "attr", None) or getattr(node.func, "id", None)
+        arg = node.args[0]
+        if what == "exit" and isinstance(arg, ast.Constant) and arg.value == 2:
+            return True
+    return False
+
+
+def harness(root=ROOT):
+    """(how many hooks, how many block). None if the folder cannot be read.
+
+    **A hook is a `.py` in `.claude/hooks/` that no other one imports.** That leaves
+    `common.py` out without this script having to name it, which is what turns a list
+    into an out-of-date list, and a new piece counts itself in.
+
+    **It blocks if it exits with code 2**, the only way a hook has of stopping
+    anything. Everything else warns.
+    """
+    folder = os.path.join(root, ".claude", "hooks")
+    try:
+        names = [n for n in os.listdir(folder) if n.endswith(".py")]
+    except OSError:
+        return None
+    sources = {}
+    for n in names:
+        try:
+            sources[n] = io.open(os.path.join(folder, n), encoding="utf-8").read()
+        except Exception:
+            sources[n] = ""
+    imported = re.compile(r"^\s*import\s+(\w+)", re.MULTILINE)
+    libraries = set()
+    for who, text in sources.items():
+        for module in imported.findall(text):
+            if module + ".py" in sources and module + ".py" != who:
+                libraries.add(module + ".py")
+    hooks = sorted(set(names) - libraries)
+    return len(hooks), len([n for n in hooks if blocks(sources[n])])
+
+
+def review(text, name, exists, n_rules, scripts=None, pieces=None):
     """Returns the list of warnings. `exists` decides whether a path is on disk and
     `scripts` is the set of .py names the repository holds.
 
@@ -175,6 +258,30 @@ def review(text, name, exists, n_rules, scripts=None):
                 warnings.append("%s says \"%s %s\" and there are %d cards in rules/"
                                 % (name, figure, what, n_rules))
 
+    if pieces is not None and name in ASSERT:
+        n_hooks, n_block = pieces
+        for word in HOOK_COUNT.findall(text):
+            figure = number(word)
+            if figure is not None and figure != n_hooks:
+                warnings.append("%s says \"%s hooks\" and there are %d in .claude/hooks/"
+                                % (name, word, n_hooks))
+        for word in BLOCKERS.findall(text):
+            figure = number(word)
+            if figure is not None and figure != n_block:
+                warnings.append("%s says \"%s that block\" and %d of the %d hooks exit "
+                                "with code 2" % (name, word, n_block, n_hooks))
+        for word in WARNERS.findall(text):
+            figure = number(word)
+            if figure is not None and figure != n_hooks - n_block:
+                warnings.append("%s says \"%s that warn\" and %d of the %d hooks warn"
+                                % (name, word, n_hooks - n_block, n_hooks))
+        for warn_word, block_word in SPLIT.findall(text):
+            pair = (number(warn_word), number(block_word))
+            if None not in pair and pair != (n_hooks - n_block, n_block):
+                warnings.append("%s says \"%s warn and %s block\" and it is %d and %d"
+                                % (name, warn_word, block_word,
+                                   n_hooks - n_block, n_block))
+
     if not any(name.startswith(x) or name == x for x in NO_R37):
         m = CHANGELOG_HEADING.search(text)
         if m:
@@ -212,6 +319,7 @@ def main():
             return False
 
     scripts = {os.path.basename(r) for r in common.files(ROOT, ".py")}
+    pieces = harness()
 
     warnings = []
     for path in markdowns():
@@ -219,7 +327,7 @@ def main():
             text = io.open(path, encoding="utf-8").read()
         except Exception:
             continue
-        warnings += review(text, rel(path), exists, n, scripts)
+        warnings += review(text, rel(path), exists, n, scripts, pieces)
 
     if warnings:
         common.record(warnings, "coherence")
@@ -315,7 +423,36 @@ def selftest():
     a = review("run `.claude/hooks/missing.py`", "CLAUDE.md", fresh, None)
     assert len(a) == 1 and "hooks/missing.py" in a[0], a
 
-    print("coherence --selftest: 23 checks OK")
+    # 10. The counts of harness pieces. Four hooks, one of which blocks.
+    four = (4, 1)
+    assert review("there are four hooks", "CLAUDE.md", has, None, None, four) == []
+    a = review("there are five hooks", "CLAUDE.md", has, None, None, four)
+    assert len(a) == 1 and "five hooks" in a[0], a
+    assert review("the one that blocks", "CLAUDE.md", has, None, None, four) == []
+    a = review("the two that block", "CLAUDE.md", has, None, None, four)
+    assert len(a) == 1 and "that block" in a[0], a
+    a = review("the two that warn", "CLAUDE.md", has, None, None, four)
+    assert len(a) == 1 and "that warn" in a[0], a
+    assert review("the three that warn", "CLAUDE.md", has, None, None, four) == []
+    assert review("Three warn and one blocks", "CLAUDE.md", has, None, None, four) == []
+    a = review("Three warn and two block", "CLAUDE.md", has, None, None, four)
+    assert len(a) == 1 and "warn and" in a[0], a
+    # A count with a complement behind it names a SUBSET, not the total. Without
+    # this, indexing a review that spoke of another repository's hooks warned here.
+    for subset in ("two hooks of Sancho", "the three hooks that sweep the repository",
+                   "the two hooks with a selftest"):
+        assert review(subset, "CLAUDE.md", has, None, None, four) == [], subset
+    # And a log does not assert: it quotes what was true the day it was written.
+    assert review("the two that block", "Documents/TASKS.md", has, None, None, four) == []
+
+    # The property, not the arithmetic: what blocks is read from the tree, because
+    # searching for the text made this script count itself. Its own selftest writes
+    # that line inside a string, and a comment naming it would do the same.
+    assert blocks("import sys\nsys.exit(2)")
+    assert not blocks("print('sys.exit(2) is what a hook that blocks does')")
+    assert not blocks("import sys\nsys.exit(0)")
+
+    print("coherence --selftest: 38 checks OK")
 
 
 if __name__ == "__main__":

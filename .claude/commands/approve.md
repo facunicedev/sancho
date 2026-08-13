@@ -14,6 +14,6 @@ For each named proposal:
 3. **Delete the proposal file** ([R27](../../rules/R27_harvest_proposes.md)). It does not go down to the archive: applied, it already lives in the card or in the code, and keeping it is a second place to read the same thing. Git keeps the why.
 4. One line in the task's entry in `Documents/TASKS.md` saying what was applied.
 
-Then **run the `architect` agent**: applying a proposal moves files and leaves indexes half done (`WORKFLOW.md`, step 9).
+Then **run the `architect` agent in its sweep pass**, saying that word: applying a proposal moves files and leaves indexes half done (`WORKFLOW.md`, step 9). **That pass proposes nothing**, and that is why it has to be named: a sweep that proposes turns every `/approve` into the next `/approve`.
 
 What gets turned down goes through `/notapprove`.

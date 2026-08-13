@@ -72,6 +72,16 @@ def words(text):
     return {c for c in chunks if len(c) > 3 and c not in STOPWORDS}
 
 
+def row_mark(name, is_folder):
+    """What has to appear in the index for that thing to count as filed.
+
+    A folder is demanded as `name/`, backticks included. With the bare name any
+    passing mention counted as a row, and a folder nobody had indexed went quiet
+    because some sentence elsewhere happened to say its name.
+    """
+    return "`{}/`".format(name) if is_folder else name
+
+
 def check_indexes(warnings):
     for folder, index in INDEXES.items():
         path = os.path.join(ROOT, folder)
@@ -91,9 +101,7 @@ def check_indexes(warnings):
                 continue
             if rel == index:
                 continue
-            # A folder must appear as `name/`, with its backticks. With the bare
-            # name any passing mention counted as a row.
-            mark = "`{}/`".format(name) if os.path.isdir(full) else name
+            mark = row_mark(name, os.path.isdir(full))
             if mark in text:
                 continue
             if os.path.isfile(full) and UNFILED_MARK in read(rel):
@@ -195,5 +203,38 @@ def main():
     }))
 
 
+def selftest():
+    """Proves the properties this hook rests on, not its arithmetic.
+
+    Both were real defects: a folder counted as filed because a sentence somewhere
+    said its name, and the restatement check fired on two lines that shared nothing
+    but filler words.
+    """
+    # A folder is only filed if the index names it as a folder, in backticks.
+    assert row_mark("Reports", True) == "`Reports/`"
+    assert row_mark("cv.docx", False) == "cv.docx"
+    assert row_mark("Reports", True) not in "the Reports of last year", \
+        "a passing mention is not a row"
+    assert row_mark("Reports", True) in "| `Reports/` | one per client |"
+
+    # Filler carries no meaning, so it cannot make two lines look like the same rule.
+    assert words("the a an of to in on for with from by at as is are be") == set()
+    assert "calculation" in words("Every calculation runs in Python")
+    assert "in" not in words("Every calculation runs in Python"), \
+        "four letters or fewer is noise: it matches everything"
+
+    # Every indexed folder points at an index, and every inbox is allowed to be empty.
+    for folder, index in INDEXES.items():
+        assert index.endswith(".md"), folder
+        assert index == "MEMORY.md" or index.startswith(folder + "/"), folder
+    for inbox in INBOXES:
+        assert inbox in ALLOWED_EMPTY, inbox
+
+    print("repo_sweep --selftest: 14 checks OK")
+
+
 if __name__ == "__main__":
-    main()
+    if "--selftest" in sys.argv:
+        selftest()
+    else:
+        main()

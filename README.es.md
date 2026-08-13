@@ -112,7 +112,7 @@ Las reglas de serie, en `rules/`, indexadas a una línea cada una en `MEMORY.md`
 
 ## Las cosas que funcionan solas
 
-Todo lo demás en Sancho es una instrucción escrita, o sea que depende de que el modelo se acuerde. Estas no. **Tres avisan y dos impiden**, y esa diferencia es todo el diseño.
+Todo lo demás en Sancho es una instrucción escrita, o sea que depende de que el modelo se acuerde. Estas no. **Tres avisan y uno impide**, y esa diferencia es todo el diseño.
 
 **`line_caps.py`** vigila el tamaño de los archivos en cada escritura. Cuando tu bitácora pasa de 250 líneas, lo dice. La respuesta nunca es subir el límite. La respuesta es que toca resumir, y te nombra el comando que lo hace.
 

@@ -42,7 +42,6 @@
 | Rule | In one line |
 |---|---|
 | [R15](rules/R15_commands_for_the_user.md) | Commands they type are given exactly as their shell expects. |
-| [R35](rules/R35_plain_language.md) | The same rule again, because this is where it is broken most. |
 | [R40](rules/R40_summarise_what_you_ask_them_to_sign.md) | What you ask them to sign gets summarised in the chat, never pointed at a file. |
 
 ## When tidying and closing

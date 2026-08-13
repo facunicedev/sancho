@@ -32,7 +32,7 @@ Rebuilt **whole**, not appended to. One row per kind of request: what to do, wit
 
 ## 4. The architect
 
-Launch the `architect` agent. It reviews the system, not the content: hooks alive, files near their cap, pieces untouched, chronic warnings, the remote if there is one, and updates to Claude Code that affect what is built here. It leaves at most three proposals.
+Launch the `architect` agent **in its review pass**, saying that word: it is the only one of the two passes that proposes, and the other one runs on every `/approve`. It reviews the system, not the content: hooks alive, files near their cap, pieces untouched, chronic warnings, the remote if there is one, and updates to Claude Code that affect what is built here. It leaves **at most** three proposals, and none without a harm behind it: if it works, nothing changes.
 
 Wait for its result and **report it with the figures**, not with "all good".
 

@@ -21,7 +21,7 @@ CAPS = [
     ("HANDOFF.md",                  70,  "to the task log"),
     ("CLAUDE.md",                  120,  "to the card of the rule it belongs to"),
     ("MEMORY.md",                  120,  "to the body of the card: only one line per rule lives here"),
-    ("WORKFLOW.md",                250,  "to the change log, or to a report in the knowledge folder"),
+    ("WORKFLOW.md",                250,  "to a report in the knowledge folder, or to the card of the rule that develops it"),
     ("rules/*.md",                  30,  "somewhere else: a rule that needs more than 30 lines is a procedure, and it should be a skill"),
     ("reglas/*.md",                 30,  "somewhere else: a rule that needs more than 30 lines is a procedure, and it should be a skill"),
     ("Documents/TASKS.md",         250,  "by running /synthesis, which summarises, replaces the detail and calls the architect"),
@@ -43,6 +43,19 @@ def relative(path):
     return None if rel.startswith("../") else rel
 
 
+def cap_for(rel):
+    """(cap, where the overflow goes) for that path, or None if it has no cap.
+
+    Kept apart from the event so the selftest can exercise it whole without
+    touching the disk: what has to be proved is which file has which cap, and
+    that has nothing to do with reading stdin.
+    """
+    for pattern, cap, overflow in CAPS:
+        if fnmatch.fnmatch(rel, pattern):
+            return cap, overflow
+    return None
+
+
 def main():
     try:
         data = json.load(sys.stdin)
@@ -57,11 +70,10 @@ def main():
     if rel is None:
         return
 
-    for pattern, cap, overflow in CAPS:
-        if fnmatch.fnmatch(rel, pattern):
-            break
-    else:
+    found = cap_for(rel)
+    if found is None:
         return
+    cap, overflow = found
 
     try:
         with open(path, encoding="utf-8") as f:
@@ -85,5 +97,38 @@ def main():
     }))
 
 
+def selftest():
+    """Proves the property: that every capped file has its cap, that the wildcards
+    really match, and that a file with no cap does not fire."""
+    assert cap_for("HANDOFF.md")[0] == 70
+    assert cap_for("Documents/TASKS.md")[0] == 250
+    assert cap_for("Documentos/TAREAS.md")[0] == 250, "the other language too"
+    assert cap_for("WORKFLOW.md")[0] == 250
+
+    # The wildcards: any rule card and any skill.
+    assert cap_for("rules/R37_no_history_in_working_files.md")[0] == 30
+    assert cap_for("reglas/R37_sin_historial.md")[0] == 30
+    assert cap_for(".claude/skills/prospecting/SKILL.md")[0] == 500
+    assert cap_for("Knowledge/KNOWLEDGE.md")[0] == 120
+
+    # What has NO cap: reports are reference material and get read in pieces.
+    assert cap_for("Knowledge/REPORT_2026-08-06.md") is None
+    assert cap_for("Documents/CV/letter.tex") is None
+    assert cap_for("Proposals/P07_x.md") is None
+
+    # The overflow can never be circular: WORKFLOW's used to point "to the change
+    # log", which was its own lines, so moving detail out lowered no total.
+    assert "change log" not in cap_for("WORKFLOW.md")[1].lower()
+
+    # Every cap states where the overflow goes. A cap with no way out is a dead end.
+    for pattern, cap, overflow in CAPS:
+        assert overflow and len(overflow) > 5, pattern
+
+    print("line_caps --selftest: 17 checks OK")
+
+
 if __name__ == "__main__":
-    main()
+    if "--selftest" in sys.argv:
+        selftest()
+    else:
+        main()
